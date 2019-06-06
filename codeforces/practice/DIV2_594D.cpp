@@ -4,7 +4,7 @@ using namespace std;
 
 #define Online 1
 // #define multitest 1
-// #define Debug 1
+#define Debug 1
 #ifdef Debug
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 template <typename Arg1>
@@ -30,76 +30,54 @@ typedef long double ld;
 const long long mod = 1000000007;
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-map<pair<int, int>, ll> DP;
-
-vector<ll> Sum;
+vector<ll> Ssum;
 int _n;
-void pre(vector<int> &v)
+void Sum(vector<int> &v)
 {
-	int n = v.size();
-	Sum.resize(n);
-	_n = n;
-	Sum[0] = v[0];
-	for (int i = 1; i < n; ++i)
-		Sum[i] = Sum[i - 1] + v[i];
+	_n = v.size();
+	Ssum.resize(_n);
+	Ssum[0] = v[0];
+	for (int i = 1; i < _n; ++i)
+		Ssum[i] = Ssum[i - 1] + v[i];
 }
-
-ll sum(int start, int end)
+ll IntervalSum(int start, int end)
 {
+	if (start < 0 || end >= _n || end < 0)
+		return 0;
 	if (start == 0)
-		return Sum[end];
-	return Sum[end] - Sum[start - 1];
+		return Ssum[end];
+	return Ssum[end] - Ssum[start - 1];
 }
-
-ll dp(vector<int> &v, int start, int end, int k)
-{
-	db(start, end, k);
-	if (start > end)
-		return -1e18;
-	if (start == end)
-	{
-		if (k == 0)
-		{
-			db(start, end, k, 0);
-			return 0;
-		}
-		db(start, end, k, 1e18);
-		return -1e18;
-	}
-	if (k <= 0)
-		return -1e18;
-	if (DP.find({start, k}) != DP.end())
-		return DP[{start, k}];
-	ll ans = -1e18, s = 0;
-	int cnt = end - start;
-	for (int i = start; i < end; ++i)
-	{
-		s += v[i];
-		cnt--;
-		auto a = dp(v, i + 1, end, k - 1);
-		if (i == (end - 1))
-			ans = max(ans, s + a);
-		else
-			ans = max(ans, s + a + sum(i + 1, end - 1));
-		if (cnt < (k - 1))
-			break;
-	}
-	db(start, end, k, ans);
-	return DP[{start, k}] = ans;
-}
-
-
 
 void solve()
 {
-	int k, n;
-	cin >> n >> k;
-	vector<int> V(n);
-	for (auto &x : V)
+	vector<int> Intrest(26);
+	for (auto &x : Intrest)
 		cin >> x;
-	pre(V);
-	cout << a(V, n - 1, k);
-	cout << dp(V, 0, n, k);
+	string str;
+	cin >> str;
+	vector<vector<int>> Pos(26);
+	int n = str.size();
+	vector<int> ValueOfChar(n);
+	for (int i = 0; i < n; ++i)
+	{
+		Pos[str[i] - 'a'].pb(i);
+		ValueOfChar[i] = Intrest[str[i] - 'a'];
+	}
+	Sum(ValueOfChar);
+	ll ans = 0;
+	for (int i = 0; i < 26; ++i)
+	{
+		map<ll, int> Map;
+		int n = Pos[i].size();
+		for (int j = 0; j < n; ++j)
+		{
+			int p = Pos[i][j];
+			ans += Map[IntervalSum(0, p - 1)];
+			Map[IntervalSum(0, p)]++;
+		}
+	}
+	cout << ans;
 }
 
 int main()

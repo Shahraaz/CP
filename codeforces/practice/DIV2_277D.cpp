@@ -4,7 +4,7 @@ using namespace std;
 
 #define Online 1
 // #define multitest 1
-// #define Debug 1
+#define Debug 1
 #ifdef Debug
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 template <typename Arg1>
@@ -30,76 +30,47 @@ typedef long double ld;
 const long long mod = 1000000007;
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-map<pair<int, int>, ll> DP;
+int n, d;
+vector<vector<int>> Graph;
+vector<int> a;
 
-vector<ll> Sum;
-int _n;
-void pre(vector<int> &v)
+ll dfs(int u, int p, int root)
 {
-	int n = v.size();
-	Sum.resize(n);
-	_n = n;
-	Sum[0] = v[0];
-	for (int i = 1; i < n; ++i)
-		Sum[i] = Sum[i - 1] + v[i];
-}
-
-ll sum(int start, int end)
-{
-	if (start == 0)
-		return Sum[end];
-	return Sum[end] - Sum[start - 1];
-}
-
-ll dp(vector<int> &v, int start, int end, int k)
-{
-	db(start, end, k);
-	if (start > end)
-		return -1e18;
-	if (start == end)
+	ll res = 1;
+	for (auto v : Graph[u])
 	{
-		if (k == 0)
-		{
-			db(start, end, k, 0);
-			return 0;
-		}
-		db(start, end, k, 1e18);
-		return -1e18;
+		if (v == p)
+			continue;
+		if ((a[v] <= (a[root] + d) && a[v] > a[root]) || (a[v] == a[root] && v <= root))
+			res = (res * (1 + dfs(v, u, root))) % mod;
 	}
-	if (k <= 0)
-		return -1e18;
-	if (DP.find({start, k}) != DP.end())
-		return DP[{start, k}];
-	ll ans = -1e18, s = 0;
-	int cnt = end - start;
-	for (int i = start; i < end; ++i)
-	{
-		s += v[i];
-		cnt--;
-		auto a = dp(v, i + 1, end, k - 1);
-		if (i == (end - 1))
-			ans = max(ans, s + a);
-		else
-			ans = max(ans, s + a + sum(i + 1, end - 1));
-		if (cnt < (k - 1))
-			break;
-	}
-	db(start, end, k, ans);
-	return DP[{start, k}] = ans;
+	return res;
 }
-
-
 
 void solve()
 {
-	int k, n;
-	cin >> n >> k;
-	vector<int> V(n);
-	for (auto &x : V)
+	cin >> d >> n;
+	Graph.resize(n);
+	a.resize(n);
+	for (auto &x : a)
 		cin >> x;
-	pre(V);
-	cout << a(V, n - 1, k);
-	cout << dp(V, 0, n, k);
+	int u, v;
+	for (int i = 1; i < n; ++i)
+	{
+		cin >> u >> v;
+		u--;
+		v--;
+		Graph[u].pb(v);
+		Graph[v].pb(u);
+	}
+	ll ans = 0;
+	for (int i = 0; i < n; ++i)
+	{
+		ans += dfs(i, -1, i);
+		// db(ans);
+		ans %= mod;
+	}
+	cout << ans << '\n';
 }
 
 int main()
