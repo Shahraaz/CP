@@ -3,7 +3,7 @@
 using namespace std;
 
 // #define multitest 1
-#define Debug 1
+// #define Debug 1
 #ifdef Debug
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 template <typename Arg1>
@@ -29,40 +29,22 @@ typedef long double ld;
 #define pb push_back
 const long long mod = 1000000007;
 
+
 void solve()
 {
-	vector<int> Paint(10);
-	int v, mincost = INT_MAX, minidx;
-	cin >> v;
-	for (int i = 1; i <= 9; ++i)
-	{
-		cin >> Paint[i];
-		if (mincost >= Paint[i])
-		{
-			mincost = Paint[i];
-			minidx = i;
-		}
-	}
-	// cout << mincost;
-	int maxlen = v / mincost;
-	if (maxlen == 0)
-		cout << -1;
-	else
-	{
-		vector<int> ToPrint(maxlen, minidx);
-		int rem = v % mincost, len = 0;
-		for (int high = 9; high > minidx && len < maxlen; --high)
-		{
-			int extraneeded = Paint[high] - Paint[minidx];
-			while (rem>=extraneeded && len < maxlen)
-			{
-				ToPrint[len++] = high;
-				rem -= extraneeded;
-			}
-		}
-		for (auto x : ToPrint)
-			cout << x;
-	}
+	int n;
+	cin >> n;
+	vector<int> Mat(n);
+	for (auto &x : Mat)
+		cin >> x;
+	sort(Mat.rbegin(), Mat.rend());
+	ll sum = 0;
+	vector<ll> Sum(n+1);
+	for(int i=1;i<=n;++i)
+		Sum[i] = Sum[i-1] + Mat[i-1];
+	for(int  m =1;m<=n;m*=4)
+		sum += Sum[m];
+	cout << sum;
 }
 
 int main()

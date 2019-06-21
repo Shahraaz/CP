@@ -3,7 +3,7 @@
 using namespace std;
 
 // #define multitest 1
-#define Debug 1
+// #define Debug 1
 #ifdef Debug
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 template <typename Arg1>
@@ -31,37 +31,31 @@ const long long mod = 1000000007;
 
 void solve()
 {
-	vector<int> Paint(10);
-	int v, mincost = INT_MAX, minidx;
-	cin >> v;
-	for (int i = 1; i <= 9; ++i)
-	{
-		cin >> Paint[i];
-		if (mincost >= Paint[i])
-		{
-			mincost = Paint[i];
-			minidx = i;
-		}
-	}
-	// cout << mincost;
-	int maxlen = v / mincost;
-	if (maxlen == 0)
-		cout << -1;
+	string s1, s2;
+	cin >> s1 >> s2;
+	if (s1.size() < s2.size())
+		swap(s1, s2);
+	if (s1.substr(0, s2.size()) != s2)
+		cout << 0 << '\n';
 	else
 	{
-		vector<int> ToPrint(maxlen, minidx);
-		int rem = v % mincost, len = 0;
-		for (int high = 9; high > minidx && len < maxlen; --high)
+		int ans = 0;
+		int g = __gcd(s1.size(), s2.size());
+		for (int i = 1; i <= g; ++i)
 		{
-			int extraneeded = Paint[high] - Paint[minidx];
-			while (rem>=extraneeded && len < maxlen)
+			if (g % i == 0)
 			{
-				ToPrint[len++] = high;
-				rem -= extraneeded;
+				bool b = true;
+				for (int j = 0; j < s1.size(); j += i)
+					if(s1.substr(j,i) != s1.substr(0,i))
+					{
+						b = false;
+						break;
+					}
+				if(b) ans++;
 			}
 		}
-		for (auto x : ToPrint)
-			cout << x;
+		cout << ans << '\n';
 	}
 }
 
