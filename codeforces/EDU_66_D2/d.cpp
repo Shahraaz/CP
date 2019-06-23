@@ -4,7 +4,7 @@ using namespace std;
 
 #define Online 1
 // #define multitest 1
-// #define Debug 1
+#define Debug 1
 #ifdef Debug
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 template <typename Arg1>
@@ -32,74 +32,23 @@ mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 map<pair<int, int>, ll> DP;
 
-vector<ll> Sum;
-int _n;
-void pre(vector<int> &v)
-{
-	int n = v.size();
-	Sum.resize(n);
-	_n = n;
-	Sum[0] = v[0];
-	for (int i = 1; i < n; ++i)
-		Sum[i] = Sum[i - 1] + v[i];
-}
-
-ll sum(int start, int end)
-{
-	if (start == 0)
-		return Sum[end];
-	return Sum[end] - Sum[start - 1];
-}
-
-ll dp(vector<int> &v, int start, int end, int k)
-{
-	db(start, end, k);
-	if (start > end)
-		return -1e18;
-	if (start == end)
-	{
-		if (k == 0)
-		{
-			db(start, end, k, 0);
-			return 0;
-		}
-		db(start, end, k, 1e18);
-		return -1e18;
-	}
-	if (k <= 0)
-		return -1e18;
-	if (DP.find({start, k}) != DP.end())
-		return DP[{start, k}];
-	ll ans = -1e18, s = 0;
-	int cnt = end - start;
-	for (int i = start; i < end; ++i)
-	{
-		s += v[i];
-		cnt--;
-		auto a = dp(v, i + 1, end, k - 1);
-		if (i == (end - 1))
-			ans = max(ans, s + a);
-		else
-			ans = max(ans, s + a + sum(i + 1, end - 1));
-		if (cnt < (k - 1))
-			break;
-	}
-	db(start, end, k, ans);
-	return DP[{start, k}] = ans;
-}
-
-
-
 void solve()
 {
-	int k, n;
+	int k, n, x;
 	cin >> n >> k;
 	vector<int> V(n);
-	for (auto &x : V)
+	for (int i = 0; i < n; ++i)
+	{
 		cin >> x;
-	pre(V);
-	cout << a(V, n - 1, k);
-	cout << dp(V, 0, n, k);
+		if (i == 0)
+			V[i] = x;
+		else
+			V[i] = V[i - 1] + x;
+		db(V[i]);
+	}
+	sort(V.begin(), V.end() - 1);
+	reverse(V.begin(), V.end() - 1);
+	cout << *V.end() + accumulate(V.begin(), V.begin() + k - 1, 0);
 }
 
 int main()

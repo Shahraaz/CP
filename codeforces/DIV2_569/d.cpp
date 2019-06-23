@@ -31,6 +31,31 @@ const long long mod = 1000000007;
 
 void solve()
 {
+	int n, m;
+	cin >> n >> m;
+	for (int i = 1; i <= (n / 2); ++i)
+		for (int j = 1; j <= m; ++ j)
+		{
+			cout << i << ' ' << j << '\n';
+			cout << n - i + 1 << ' ' << m - j + 1 << '\n';
+		}
+	if (n & 1)
+	{
+		int x = n / 2 + 1;
+		deque<int> Dq;
+		for (int i = 1; i <= m; ++i)
+			Dq.pb(i);
+		while (Dq.size())
+		{
+			cout << x << ' ' << Dq.front() << '\n';
+			Dq.pop_front();
+			if (Dq.size())
+			{
+				cout << x << ' ' << Dq.back() << '\n';
+				Dq.pop_back();
+			}
+		}
+	}
 }
 
 int main()
