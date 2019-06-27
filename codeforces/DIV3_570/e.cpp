@@ -36,10 +36,31 @@ void solve()
 	string s;
 	cin >> s;
 	int ans = 0;
-	while (k--)
+	queue<string> Q;
+	set<string> st;
+	Q.push(s);
+	st.insert(s);
+	while (!Q.empty() && st.size() < k)
 	{
+		auto v = Q.front();
+		Q.pop();
+		for (int i = 0; i < v.size(); ++i)
+		{
+			string nv = v;
+			nv.erase(i, 1);
+			if (!st.count(nv) && (st.size() + 1 <= k))
+			{
+				Q.push(nv);
+				st.insert(nv);
+				ans += n - nv.size();
+				db(nv,ans);
+			}
+		}
 	}
-	cout << ans << '\n';
+	if (st.size() < k)
+		cout << -1 << '\n';
+	else
+		cout << ans << '\n';
 }
 
 int main()
