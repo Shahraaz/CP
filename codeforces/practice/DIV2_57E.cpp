@@ -87,8 +87,8 @@ void solve()
 	for (int i = 0; i < n; ++i)
 	{
 		update(1, 1, 0, n - 1, a[i], -1);
-		int left = query(0, 1, 0, n - 1, a[i] + 1, n - 1);
-		int right = query(1, 1, 0, n - 1, 0, a[i] - 1);
+		ll left = query(0, 1, 0, n - 1, a[i] + 1, n - 1);
+		ll right = query(1, 1, 0, n - 1, 0, a[i] - 1);
 		db(a[i], left, right);
 		ans += left * right;
 		update(0, 1, 0, n - 1, a[i], 1);
