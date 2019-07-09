@@ -43,7 +43,7 @@ ll solve(int i, int K, int prev)
 	}
 	if (K == 0)
 		return 1e17;
-	ll &ret = dp[i][k][prev];
+	ll &ret = dp[i][K][prev];
 	if (ret >= 0)
 		return ret;
 	ret = 1e17;
