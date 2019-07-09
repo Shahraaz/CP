@@ -43,7 +43,7 @@ ll solve(ll end, ll start)
 	{
 		if (!allowed)
 		{
-			if(s[0]=='1')
+			if (s[0] == '1');
 		}
 	}
 }
