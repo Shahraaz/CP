@@ -39,14 +39,14 @@ ll solve(int i, int K, int prev)
 	{
 		if (K == 0)
 			return 0;
-		return 1e18;
+		return 1e17;
 	}
 	if (K == 0)
-		return 1e18;
+		return 1e17;
 	ll &ret = dp[i][k][prev];
 	if (ret >= 0)
 		return ret;
-	ret = 1e18;
+	ret = 1e17;
 	if (c[i] == 0)
 	{
 		for (int k = 1; k <= m; ++k)
@@ -54,8 +54,8 @@ ll solve(int i, int K, int prev)
 				continue;
 			else
 			{
-				ll temp = p[i][k] + solve(i + 1, K - 1, k);
-				ret = min(ret, temp);
+				ll temp = p[i][k];
+				ret = min(ret, temp + solve(i + 1, K - 1, k));
 				for (int j = i + 1; j < n; ++j)
 					if (c[j] == 0)
 					{
@@ -69,6 +69,7 @@ ll solve(int i, int K, int prev)
 						ret = min(ret, temp + solve(j, K - 1, k));
 						break;
 					}
+				db(i, k, K, prev, ret);
 			}
 	}
 	else
@@ -80,6 +81,7 @@ ll solve(int i, int K, int prev)
 			{
 				ll temp = solve(i + 1, K - 1, k);
 				ret = temp;
+				temp = 0;
 				for (int j = i + 1; j < n; ++j)
 					if (c[j] == 0)
 					{
@@ -95,7 +97,7 @@ ll solve(int i, int K, int prev)
 					}
 			}
 	}
-	db(ret, i, K, prev);
+	db(i, K, prev, ret);
 	return ret;
 }
 
