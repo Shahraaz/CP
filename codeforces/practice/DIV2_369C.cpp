@@ -35,13 +35,17 @@ ll dp[nax][nax][nax];
 
 ll solve(int i, int K, int prev)
 {
+	// db(i, K, prev);
 	if (i == n)
 	{
-		if (K == 0)
+		if (K == 1)
+		{
+			db(0, i, K, prev);
 			return 0;
+		}
 		return 1e17;
 	}
-	if (K == 0)
+	if (K < 0)
 		return 1e17;
 	ll &ret = dp[i][K][prev];
 	if (ret >= 0)
@@ -49,55 +53,20 @@ ll solve(int i, int K, int prev)
 	ret = 1e17;
 	if (c[i] == 0)
 	{
-		for (int k = 1; k <= m; ++k)
-			if (k == prev)
-				continue;
+		for (int clr = 1; clr <= m; ++clr)
+			if (clr == prev)
+				ret = min(ret, p[i][clr] + solve(i + 1, K, prev));
 			else
-			{
-				ll temp = p[i][k];
-				ret = min(ret, temp + solve(i + 1, K - 1, k));
-				for (int j = i + 1; j < n; ++j)
-					if (c[j] == 0)
-					{
-						temp += p[j][k];
-						ret = min(ret, temp + solve(j + 1, K - 1, k));
-					}
-					else if (c[j] == k)
-						ret = min(ret, temp + solve(j + 1, K - 1, k));
-					else
-					{
-						ret = min(ret, temp + solve(j, K - 1, k));
-						break;
-					}
-				db(i, k, K, prev, ret);
-			}
+				ret = min(ret, p[i][clr] + solve(i + 1, K - (prev != 0), clr));
 	}
 	else
 	{
-		for (int k = c[i]; k <= c[i]; ++k)
-			if (k == prev)
-				ret = 1e18;
-			else
-			{
-				ll temp = solve(i + 1, K - 1, k);
-				ret = temp;
-				temp = 0;
-				for (int j = i + 1; j < n; ++j)
-					if (c[j] == 0)
-					{
-						temp += p[j][k];
-						ret = min(ret, temp + solve(j + 1, K - 1, k));
-					}
-					else if (c[j] == k)
-						ret = min(ret, temp + solve(j + 1, K - 1, k));
-					else
-					{
-						ret = min(ret, temp + solve(j, K - 1, k));
-						break;
-					}
-			}
+		if (c[i] == prev)
+			ret = min(ret, solve(i + 1, K, prev));
+		else
+			ret = min(ret, solve(i + 1, K - 1, c[i]));
 	}
-	db(i, K, prev, ret);
+	db(ret, i, K, prev);
 	return ret;
 }
 
@@ -107,10 +76,14 @@ void solve()
 	for (int i = 0; i < n; ++i)
 		cin >> c[i];
 	for (int i = 0; i < n; ++i)
+	{
 		for (int j = 1; j <= m; ++j)
 			cin >> p[i][j];
+		if (c[i] != 0)
+			memset(p[i], 0, sizeof(p[i]));
+	}
 	memset(dp, -1, sizeof(dp));
-	ll temp = solve(0, k, 0);
+	ll temp = solve(0, k, c[0]);
 	if (temp >= 1e16)
 		cout << -1;
 	else
