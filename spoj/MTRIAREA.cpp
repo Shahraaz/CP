@@ -39,14 +39,72 @@ bool cmp(Point a, Point b)
 	return real(a) < real(b);
 }
 
+int cross(Point o, Point a, Point b)
+{
+	a -= o;
+	b -= o;
+	return real(a) * imag(b) - imag(a) * real(b);
+}
+
 Polygon convex_hull(Polygon &P)
 {
 	int n = P.size();
 	if (n <= 3)
 		return P;
 	Polygon H(2 * n);
-	sort(P.begin(), P.end(),cmp);
-	return P;
+	sort(P.begin(), P.end(), cmp);
+	int k = 0;
+	for (int i = 0; i < n; ++i)
+	{
+		while (k >= 2 && cross(H[k - 2], H[k - 1], P[i]) <= 0)
+			--k;
+		H[k++] = P[i];
+	}
+	int t = k + 1;
+	for (int i = n - 1; i > 0; --i)
+	{
+		while (k >= t && cross(H[k - 2], H[k - 1], P[i - 1]) <= 0)
+			--k;
+		H[k++] = P[i - 1];
+	}
+	H.resize(k - 1);
+	return H;
+}
+
+int inc(int a, int n)
+{
+	a++;
+	if (a >= n)
+		a -= n;
+	return a;
+}
+
+double maxTri(Polygon &Hull)
+{
+	int a, b, c, n = Hull.size();
+	int ans = 0;
+	a = 0;
+	b = 1;
+	c = 2;
+	for (; a < n; ++a)
+	{
+		if (a == b)
+			b = inc(b, n);
+		if (c == b)
+			c = inc(c, n);
+		while (true)
+		{
+			while (abs(cross(Hull[a], Hull[b], Hull[c])) <= abs(cross(Hull[a], Hull[b], Hull[inc(c, n)])))
+				c = inc(c, n);
+			if (abs(cross(Hull[a], Hull[b], Hull[c])) <= abs(cross(Hull[a], Hull[inc(b, n)], Hull[c])))
+				b = inc(b, n);
+			else
+				break;
+		}
+		int curr = abs(cross(Hull[a], Hull[b], Hull[c]));
+		ans = max(curr, ans);
+	}
+	return 0.5 * ans;
 }
 
 void solve(int n)
@@ -58,6 +116,46 @@ void solve(int n)
 		cin >> x >> y;
 		inp[i] = Point(x, y);
 	}
+	inp = convex_hull(inp);
+#ifndef Brute
+	cout << fixed << setprecision(2) << maxTri(inp) << '\n';
+	/*
+		Sadly the testcases were weak above solution gives wrong answer
+		9
+		4752 4262
+		3383 413
+		759 2927
+		4745 4322
+		1213 691
+		2506 4423
+		3040 4460
+		1000 1000
+		5000 1000
+		9
+		2459 691
+		2828 758
+		4361 1951
+		4183 4244
+		3832 4647	
+		2529 5756
+		2481 5718
+		0 3587
+		728 2028
+		-1
+		the correct output is:
+		6920000.00
+		6919204.00 
+	 */
+#else
+	int ans = 0;
+	n = inp.size();
+	for (int i = 0; i < n; ++i)
+		for (int j = i + 1; j < n; ++j)
+			for (int k = j + 1; k < n; ++k)
+				ans = max(ans, abs(cross(inp[i], inp[j], inp[k])));
+	cout << fixed << setprecision(2);
+	cout << ans * 0.5 << '\n';
+#endif
 }
 
 int main()
